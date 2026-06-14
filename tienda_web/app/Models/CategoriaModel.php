@@ -19,4 +19,20 @@ class CategoriaModel extends Model
     {
         return $this->where('activo', 1)->findAll();
     }
-}
+    
+    // =================================================================
+    // ELIMINACIÓN (DESACTIVAR)
+    // =================================================================
+public function bajaLogica($id)
+    {
+        return $this->update($id, ['activo' => 0]);
+    }
+
+    // ==========================================
+    // REACTIVACIÓN
+    // ==========================================
+    public function reactivarCategoria($id)
+    {
+        return $this->update($id, ['activo' => 1]);
+    }
+}   

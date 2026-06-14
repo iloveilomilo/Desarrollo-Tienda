@@ -99,7 +99,23 @@ class ProductoModel extends Model
         }
     }
 
-    
+    // =================================================================
+    // ELIMINACIÓN (DESACTIVACIÓN)
+    // =================================================================
+    public function bajaLogica($id)
+    {
+        $this->db->transStart();
+        
+        // Desactivar el producto principal
+        $this->update($id, ['fecha_eliminacion' => date('Y-m-d H:i:s')]);
+        
+        // Desactivar el inventario relacionado 
+        $this->db->table('inventario')->where('producto_id', $id)->update(['activo' => 0]);
+        
+        $this->db->transComplete();
+        
+        return $this->db->transStatus();
+    }
 
 
     // =================================================================
