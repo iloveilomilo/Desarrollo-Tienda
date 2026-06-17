@@ -1,6 +1,6 @@
 <?= $this->extend('layouts/main') ?>
 
-<?= $this->section('contenido') ?>
+<?= $this->section('content') ?>
 
 <div class="container-fluid">
 
