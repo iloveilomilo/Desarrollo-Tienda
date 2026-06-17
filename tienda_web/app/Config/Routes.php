@@ -6,8 +6,12 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
-// Página de inicio (temporal hasta implementar catálogo)
-$routes->get('/', 'Home::index');
+// =================================================================
+// Rutas Públicas — Catálogo visible para todos (HU-05)
+// =================================================================
+$routes->get('/', 'Administrador\Dashboard::cliente');
+$routes->get('dashboard/cliente', 'Administrador\Dashboard::cliente');
+$routes->get('tienda/producto/(:num)', 'Administrador\Dashboard::detalle/$1');
 
 // =================================================================
 // Rutas de Autenticación y Registro
