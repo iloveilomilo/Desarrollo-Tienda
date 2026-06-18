@@ -68,4 +68,9 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Administrador', 'filter
     // Perfil del administrador
     $routes->get('perfil', 'Perfil::index');
     $routes->post('perfil/actualizar', 'Perfil::actualizar_datos');
+
+    // Soporte interno (admin atiende a agentes de Atención al Cliente)
+    $routes->get('soporte', 'SoporteAdmin::index');
+    $routes->get('soporte/chat/(:num)', 'SoporteAdmin::ver_chat/$1');
+    $routes->post('soporte/responder', 'SoporteAdmin::responder');
 });
