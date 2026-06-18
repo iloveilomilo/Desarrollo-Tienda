@@ -9,8 +9,37 @@ class Dashboard extends BaseController
 {
     public function admin()
     {
-        // En el Sprint 5 se conectará el modelo de KPIs
-        return view('Administrador/admin');
+        $db = \Config\Database::connect();
+
+        $ingresos = $db->table('pedidos')->selectSum('total')->where('estado !=', 'cancelado')->get()->getRow()->total ?? 0;
+        $ordenes_pendientes = $db->table('pedidos')->where('estado', 'pendiente')->countAllResults();
+        $productos_activos  = $db->table('inventario')->where('activo', 1)->countAllResults();
+        $clientes_total     = $db->table('usuarios')->where('rol', 'cliente')->where('activo', 1)->countAllResults();
+        $chats_pendientes   = $db->table('salas_chat')
+            ->join('usuarios', 'usuarios.id = salas_chat.cliente_id')
+            ->where('usuarios.rol', 'atencion_cliente')
+            ->whereIn('salas_chat.estado', ['nuevo', 'en_proceso'])
+            ->countAllResults();
+
+        $ordenes_recientes = $db->table('pedidos')
+            ->select('pedidos.id, pedidos.total, pedidos.estado, pedidos.fecha, usuarios.nombre, usuarios.apellidos')
+            ->join('usuarios', 'usuarios.id = pedidos.cliente_id')
+            ->orderBy('pedidos.id', 'DESC')
+            ->limit(10)
+            ->get()->getResultArray();
+
+        $stock_bajo = $db->table('inventario')
+            ->select('productos.nombre, inventario.sku, inventario.stock')
+            ->join('productos', 'productos.id = inventario.producto_id')
+            ->where('inventario.activo', 1)
+            ->where('inventario.stock <=', 3)
+            ->orderBy('inventario.stock', 'ASC')
+            ->get()->getResultArray();
+
+        return view('Administrador/admin', compact(
+            'ingresos', 'ordenes_pendientes', 'productos_activos',
+            'clientes_total', 'ordenes_recientes', 'chats_pendientes', 'stock_bajo'
+        ));
     }
 
     public function cliente()
