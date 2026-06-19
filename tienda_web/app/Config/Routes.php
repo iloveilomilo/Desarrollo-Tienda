@@ -78,4 +78,29 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Administrador', 'filter
     $routes->post('carrito/agregar',        'cliente\Carrito::agregar',     ['filter' => 'clienteAuth']);
     $routes->get('carrito/eliminar/(:num)', 'cliente\Carrito::eliminar/$1', ['filter' => 'clienteAuth']);
     $routes->post('carrito/actualizar',     'cliente\Carrito::actualizar',  ['filter' => 'clienteAuth']);
+    // Carrito de Compras
+    $routes->get('carrito',                   'cliente\Carrito::index',           ['filter' => 'clienteAuth']);
+    $routes->post('carrito/agregar',          'cliente\Carrito::agregar',         ['filter' => 'clienteAuth']);
+    $routes->get('carrito/eliminar/(:num)',   'cliente\Carrito::eliminar/$1',     ['filter' => 'clienteAuth']);
+    $routes->post('carrito/actualizar',       'cliente\Carrito::actualizar',      ['filter' => 'clienteAuth']);
+
+    // Soporte al Cliente
+    $routes->post('soporte/enviar_duda',              'cliente\SoporteCliente::enviar_duda',    ['filter' => 'clienteAuth']);
+    $routes->get('mis-preguntas',                     'cliente\SoporteCliente::mis_preguntas', ['filter' => 'clienteAuth']);
+    $routes->get('mis-preguntas/chat/(:num)',          'cliente\SoporteCliente::ver_chat/$1',   ['filter' => 'clienteAuth']);
+    $routes->post('mis-preguntas/responder',           'cliente\SoporteCliente::responder_chat',['filter' => 'clienteAuth']);
+
+    // Perfil y Direcciones
+    $routes->get('perfil',                            'cliente\Perfil::index',               ['filter' => 'clienteAuth']);
+    $routes->post('perfil/actualizar_datos',          'cliente\Perfil::actualizar_datos',    ['filter' => 'clienteAuth']);
+    $routes->post('perfil/guardar_direccion',         'cliente\Perfil::guardar_direccion',   ['filter' => 'clienteAuth']);
+    $routes->get('perfil/eliminar_direccion/(:num)',  'cliente\Perfil::eliminar_direccion/$1',['filter' => 'clienteAuth']);
+
+    // Checkout y Pago (Mercado Pago)
+    $routes->get('checkout',                          'cliente\Checkout::index',    ['filter' => 'clienteAuth']);
+    $routes->post('checkout/procesar',                'cliente\Checkout::procesar', ['filter' => 'clienteAuth']);
+    $routes->get('checkout/exito',                    'cliente\Checkout::exito',    ['filter' => 'clienteAuth']);
+
+    // Mis Compras
+    $routes->get('mis-compras',                       'cliente\Compras::index',     ['filter' => 'clienteAuth']);
 });
