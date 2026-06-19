@@ -73,4 +73,9 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Administrador', 'filter
     $routes->get('soporte', 'SoporteAdmin::index');
     $routes->get('soporte/chat/(:num)', 'SoporteAdmin::ver_chat/$1');
     $routes->post('soporte/responder', 'SoporteAdmin::responder');
+        
+    $routes->get('carrito',                 'cliente\Carrito::index',       ['filter' => 'clienteAuth']);
+    $routes->post('carrito/agregar',        'cliente\Carrito::agregar',     ['filter' => 'clienteAuth']);
+    $routes->get('carrito/eliminar/(:num)', 'cliente\Carrito::eliminar/$1', ['filter' => 'clienteAuth']);
+    $routes->post('carrito/actualizar',     'cliente\Carrito::actualizar',  ['filter' => 'clienteAuth']);
 });
