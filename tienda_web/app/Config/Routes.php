@@ -131,3 +131,18 @@ $routes->get('checkout/exito',                    'cliente\Checkout::exito',    
 
 // Mis Compras
 $routes->get('mis-compras',                       'cliente\Compras::index',     ['filter' => 'clienteAuth']);
+
+// ============================================================
+// Módulo Atención al Cliente 
+// ============================================================
+
+$routes->group('soporte', ['namespace' => 'App\Controllers\Soporte', 'filter' => 'soporteAuth'], function ($routes) {
+    $routes->get('panel',                    'Soporte::index');
+    $routes->get('mensajes',                 'Soporte::mensajes');
+    $routes->get('historial',                'Soporte::historial');
+    $routes->get('responder/(:num)',         'Soporte::responder/$1');
+    $routes->post('enviar_mensaje',          'Soporte::enviar_mensaje');
+    $routes->post('actualizar_estado',       'Soporte::actualizar_estado');
+    $routes->get('cerrar/(:num)',            'Soporte::cerrar_conversacion/$1');
+    $routes->get('mensajes_ajax/(:num)',     'Soporte::obtener_mensajes_nuevos/$1');
+});
