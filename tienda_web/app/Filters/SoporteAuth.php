@@ -15,8 +15,7 @@ class SoporteAuth implements FilterInterface
         }
 
         if (session()->get('rol') !== 'atencion_cliente') {
-            // Lo mandamos a su panel de cliente o a una ruta de error
-            return redirect()->to('/dashboard/cliente')->with('msg', 'Acceso denegado. Área exclusiva de administración.');
+            return redirect()->to('/login');
         }
     }
 
