@@ -15,7 +15,7 @@ class ClienteAuth implements FilterInterface
         }
 
         if (session()->get('rol') !== 'cliente') {
-            return redirect()->to('/login'); 
+            return redirect()->to('/login');
         }
     }
 
