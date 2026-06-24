@@ -7,7 +7,7 @@
     <div>
         <h3 class="fw-bold text-dark"><i class="fas fa-headset text-primary me-2"></i>Panel de Atención al Cliente</h3>
         <p class="text-muted">Bienvenida, aquí tienes un resumen de los tickets activos.</p>
-        <!-- Hoy es 23 de de junio del 2026 -->
+        <!-- Hoy es 23 de de junio del 2026 qqq-->
     </div>
     <a href="<?= base_url('soporte/mensajes') ?>" class="btn btn-primary rounded-pill px-4 fw-bold">
         <i class="fas fa-inbox me-2"></i>Ver Bandeja de Entrada
