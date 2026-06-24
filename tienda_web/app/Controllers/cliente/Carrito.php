@@ -1,5 +1,5 @@
 <?php
-
+//este es un comentario 23/06/2026 6:45
 namespace App\Controllers\cliente;
 
 use App\Controllers\BaseController;
