@@ -6,6 +6,7 @@
     <div>
         <h3 class="fw-bold text-dark"><i class="fas fa-chart-line text-primary me-2"></i>Resumen del Negocio</h3>
         <p class="text-muted">Bienvenido a tu panel de control, aquí tienes las estadísticas al día de hoy.</p>
+        <!-- <h3>Cambio para revisión desde juan carlos cortés</h3> -->
     </div>
 </div>
 
