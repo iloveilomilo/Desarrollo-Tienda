@@ -1,3 +1,15 @@
 vendor/
 .env
-writable/
+
+# Ignorar contenido generado en tiempo de ejecución,
+# pero conservar la estructura de carpetas (ver .gitkeep)
+writable/cache/*
+!writable/cache/.gitkeep
+writable/debugbar/*
+!writable/debugbar/.gitkeep
+writable/logs/*
+!writable/logs/.gitkeep
+writable/session/*
+!writable/session/.gitkeep
+writable/uploads/*
+!writable/uploads/.gitkeep
