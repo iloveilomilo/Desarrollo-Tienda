@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "newphonemx-ci4",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["spark", "serve"],
+      "port": 8080
+    }
+  ]
+}
