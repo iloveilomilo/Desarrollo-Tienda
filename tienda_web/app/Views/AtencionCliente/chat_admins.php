@@ -4,8 +4,8 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h3 class="fw-bold text-primary"><i class="fas fa-headset me-2"></i>Soporte Interno</h3>
-        <p class="text-muted">Habla con cualquiera de tus agentes de Atención al Cliente, cuando lo necesites.</p>
+        <h3 class="fw-bold text-primary"><i class="fas fa-user-shield me-2"></i>Chats con Administradores</h3>
+        <p class="text-muted">Habla con cualquier administrador cuando necesites resolver una duda mayor.</p>
     </div>
 </div>
 
@@ -17,33 +17,38 @@
 
 <div class="row">
 
-    <!-- ── Lista de agentes ── -->
+    <!-- ── Lista de administradores ── -->
     <div class="col-md-4 mb-4">
         <div class="card shadow-sm border-0" style="height:650px;">
             <div class="card-header bg-white border-bottom py-3">
-                <h6 class="mb-0 fw-bold text-secondary"><i class="fas fa-users me-2"></i>Agentes de Atención al Cliente</h6>
+                <h6 class="mb-0 fw-bold text-secondary"><i class="fas fa-users me-2"></i>Administradores</h6>
             </div>
 
             <div class="list-group list-group-flush" style="overflow-y:auto; flex:1;">
-                <?php if (!empty($agentes)): ?>
-                    <?php foreach ($agentes as $a): ?>
+                <?php if (!empty($admins)): ?>
+                    <?php foreach ($admins as $a): ?>
                         <?php
-                        $isActive = (isset($agente_actual) && $agente_actual['id'] == $a['id'])
+                        $isActive = (isset($admin_actual) && $admin_actual['id'] == $a['id'])
                             ? 'bg-primary bg-opacity-10 border-start border-primary border-4'
                             : '';
+                        // Ojo: aquí la agente es quien pregunta ("cliente" en la tabla) y el
+                        // admin es quien "atiende", así que los estados se leen al revés que
+                        // en la bandeja de tickets de clientes: 'nuevo' significa que YA
+                        // respondiste y le toca al admin; 'espera_cliente' significa que el
+                        // admin ya contestó y ahora te toca a ti.
                         $badgeEstado = match($a['estado']) {
-                            'nuevo'          => '<span class="badge bg-danger ms-1">Nuevo</span>',
-                            'en_proceso'     => '<span class="badge bg-warning text-dark ms-1">En proceso</span>',
-                            'espera_cliente' => '<span class="badge bg-info ms-1">Espera respuesta</span>',
+                            'nuevo'          => '<span class="badge bg-info ms-1">Respondido</span>',
+                            'en_proceso'     => '<span class="badge bg-info ms-1">Respondido</span>',
+                            'espera_cliente' => '<span class="badge bg-danger ms-1">¡Tienes respuesta!</span>',
                             'cerrado'        => '<span class="badge bg-secondary ms-1">Cerrado</span>',
                             default          => '<span class="badge bg-light text-muted border ms-1">Sin conversación</span>'
                         };
                         ?>
-                        <a href="<?= base_url('admin/soporte/chat/' . $a['id']) ?>"
+                        <a href="<?= base_url('soporte/admins/chat/' . $a['id']) ?>"
                             class="list-group-item list-group-item-action py-3 <?= $isActive ?>">
                             <div class="d-flex w-100 justify-content-between align-items-center">
                                 <h6 class="mb-1 fw-bold text-dark">
-                                    <i class="fas fa-user-tie text-primary me-1"></i>
+                                    <i class="fas fa-user-shield text-primary me-1"></i>
                                     <?= esc($a['nombre'] . ' ' . $a['apellidos']) ?>
                                 </h6>
                                 <?php if ($a['fecha_inicio']): ?>
@@ -60,7 +65,7 @@
                 <?php else: ?>
                     <div class="p-5 text-center text-muted">
                         <i class="fas fa-user-slash fa-3x mb-3 text-light d-block"></i>
-                        <p>No hay agentes de Atención al Cliente activos.</p>
+                        <p>No hay administradores activos.</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -71,12 +76,12 @@
     <div class="col-md-8">
         <div class="card shadow-sm border-0 d-flex flex-column" style="height:650px;">
 
-            <?php if (isset($agente_actual)): ?>
+            <?php if (isset($admin_actual)): ?>
 
                 <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="mb-0 fw-bold text-primary">
-                            <i class="fas fa-comments me-2"></i><?= esc($agente_actual['nombre'] . ' ' . $agente_actual['apellidos']) ?>
+                            <i class="fas fa-comments me-2"></i><?= esc($admin_actual['nombre'] . ' ' . $admin_actual['apellidos']) ?>
                         </h6>
                         <small class="text-muted">
                             <?= $sala_actual ? 'Sala de soporte #' . $sala_actual['id'] : 'Aún no tienen conversación' ?>
@@ -100,13 +105,13 @@
                                     </div>
                                 </div>
                             <?php else: ?>
-                                <!-- Mensaje del agente (izquierda) -->
+                                <!-- Mensaje del administrador (izquierda) -->
                                 <div class="d-flex justify-content-start mb-3">
                                     <div class="bg-white text-dark p-3 shadow-sm border"
                                         style="max-width:75%; border-radius:15px; border-bottom-left-radius:0;">
                                         <div class="fw-bold text-primary mb-1" style="font-size:0.85rem;">
                                             <?= esc($m['remitente']) ?>
-                                            <span class="text-muted fw-normal">(Agente AC)</span>
+                                            <span class="text-muted fw-normal">(Admin)</span>
                                         </div>
                                         <p class="mb-1 text-secondary" style="line-height:1.4;"><?= nl2br(esc($m['mensaje'])) ?></p>
                                         <small class="text-muted d-block text-end mt-1" style="font-size:0.7rem;">
@@ -120,7 +125,7 @@
                     <?php else: ?>
                         <div class="d-flex h-100 justify-content-center align-items-center text-muted">
                             <p class="bg-white px-4 py-2 rounded-pill shadow-sm border small">
-                                Aún no hay mensajes con este agente. Escribe algo para iniciar la conversación.
+                                Aún no hay mensajes con este administrador. Escribe algo para iniciar la conversación.
                             </p>
                         </div>
                     <?php endif; ?>
@@ -128,11 +133,11 @@
 
                 <?php if (!$sala_actual || $sala_actual['estado'] != 'cerrado'): ?>
                     <div class="card-footer bg-white border-top p-3">
-                        <form action="<?= base_url('admin/soporte/responder') ?>" method="post">
-                            <input type="hidden" name="agente_id" value="<?= $agente_actual['id'] ?>">
+                        <form action="<?= base_url('soporte/admins/responder') ?>" method="post">
+                            <input type="hidden" name="admin_id" value="<?= $admin_actual['id'] ?>">
                             <div class="input-group shadow-sm rounded">
                                 <textarea name="mensaje" class="form-control bg-light border-0 py-3 px-4"
-                                    rows="1" placeholder="Escribe tu mensaje para el agente..." required
+                                    rows="1" placeholder="Escribe tu mensaje para el administrador..." required
                                     style="resize:none; border-radius:25px 0 0 25px;"></textarea>
                                 <button class="btn btn-primary px-4" type="submit"
                                     style="border-radius:0 25px 25px 0;">
@@ -154,9 +159,9 @@
                     <div class="bg-white p-4 rounded-circle shadow-sm mb-3">
                         <i class="fas fa-comments text-primary fa-4x"></i>
                     </div>
-                    <h5 class="fw-bold text-dark">Panel de Soporte Interno</h5>
+                    <h5 class="fw-bold text-dark">Chats con Administradores</h5>
                     <p class="text-center px-5">
-                        Selecciona un agente de la lista para ver su conversación
+                        Selecciona un administrador de la lista para ver su conversación
                         o escribirle algo nuevo, aunque nunca hayan hablado antes.
                     </p>
                 </div>

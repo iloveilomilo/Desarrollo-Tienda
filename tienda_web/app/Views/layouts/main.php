@@ -194,6 +194,9 @@
                 <a href="<?= base_url('soporte/historial') ?>" class="sidebar-link <?= str_contains(current_url(), 'historial') ? 'active' : '' ?>">
                     <i class="fas fa-history me-2"></i>Historial
                 </a>
+                <a href="<?= base_url('soporte/admins') ?>" class="sidebar-link <?= str_contains(current_url(), 'soporte/admins') ? 'active' : '' ?>">
+                    <i class="fas fa-user-shield me-2"></i>Chats con Administradores
+                </a>
             <?php endif; ?>
 
             <!-- Cerrar sesión (todos) -->

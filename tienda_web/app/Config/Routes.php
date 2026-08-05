@@ -114,4 +114,9 @@ $routes->group('soporte', ['namespace' => 'App\Controllers\Soporte', 'filter' =>
     $routes->post('actualizar_estado',  'Soporte::actualizar_estado');
     $routes->get('cerrar/(:num)',       'Soporte::cerrar_conversacion/$1');
     $routes->get('mensajes_ajax/(:num)','Soporte::obtener_mensajes_nuevos/$1');
+
+    // Chats del agente con cualquier administrador
+    $routes->get('admins',              'ChatAdmin::index');
+    $routes->get('admins/chat/(:num)',  'ChatAdmin::ver_chat/$1');
+    $routes->post('admins/responder',   'ChatAdmin::responder');
 });
