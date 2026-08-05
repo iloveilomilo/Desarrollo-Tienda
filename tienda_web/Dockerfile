@@ -10,9 +10,8 @@ RUN apt-get update && apt-get install -y \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
-# Apache debe servir desde /public, no desde la raíz del proyecto
-RUN sed -i 's#/var/www/html#/var/www/html/public#g' /etc/apache2/sites-available/000-default.conf \
-    && sed -i 's#AllowOverride None#AllowOverride All#g' /etc/apache2/apache2.conf
+# Apache debe servir desde /public y permitir que .htaccess funcione
+COPY apache-vhost.conf /etc/apache2/sites-available/000-default.conf
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
