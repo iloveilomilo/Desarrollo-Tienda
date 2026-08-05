@@ -22,15 +22,19 @@ Options -Indexes
 	RewriteRule ^ %1 [L,R=301]
 
 	# Rewrite "www.example.com -> example.com"
-	RewriteCond %{HTTPS} !=on
-	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+	# (deshabilitado por completo: si solo se comenta la RewriteRule,
+	# las 2 condiciones de abajo se pegan a la siguiente regla activa
+	# y rompen el enrutamiento hacia index.php)
+	# RewriteCond %{HTTPS} !=on
+	# RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 	# RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
 
 	# Checks to see if the user is attempting to access a valid file,
 	# such as an image or css document, if this isn't true it sends the
 	# request to the front controller, index.php
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^ index.php/$0 [PT,E=PATH_INFO:$1]
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^(.*)$ index.php/$1 [PT,L]
 
 	# Ensure Authorization header is passed along
 	RewriteCond %{HTTP:Authorization} .
