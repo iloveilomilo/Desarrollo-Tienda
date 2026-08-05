@@ -35,13 +35,24 @@ En Render, ve a **Environment** y agrega estas (los valores reales están en tu 
 | `JWT_SECRET` | El mismo valor que tienes en tu `.env` |
 | `MP_ACCESS_TOKEN` | Token de Mercado Pago |
 | `MP_PUBLIC_KEY` | Public key de Mercado Pago |
-| `SMTP_HOST` | `smtp.gmail.com` |
-| `SMTP_USER` | Tu correo Gmail |
-| `SMTP_PASS` | Tu contraseña de aplicación de Gmail |
-| `SMTP_PORT` | `465` |
-| `SMTP_CRYPTO` | `ssl` |
+| `BREVO_API_KEY` | API key de tu cuenta de Brevo (ver nota abajo) |
+| `SMTP_USER` | El correo que aparece como remitente (debe estar verificado en Brevo) |
 
 No subas tu `.env` real a GitHub. Estas variables se configuran solo en el panel de Render.
+
+### Por qué Brevo y no Gmail directo
+
+Render bloquea las conexiones salientes por los puertos que usa SMTP (465/587), así que Gmail
+directo (`fsockopen` a `smtp.gmail.com`) nunca conecta desde ahí — da "Connection timed out".
+Por eso los correos se mandan por la API HTTP de Brevo (puerto 443, igual que Mercado Pago),
+que sí funciona sin problema.
+
+Pasos para configurarlo:
+1. Crea cuenta gratis en https://www.brevo.com (300 correos/día gratis).
+2. Ve a **Senders, Domains & Dedicated IPs → Senders** y verifica el correo que quieras usar
+   como remitente (ej. el mismo Gmail que ya tenías) — Brevo te manda un correo de confirmación.
+3. Ve a **SMTP & API → API Keys** y genera una nueva API key.
+4. Pon esa key en la variable `BREVO_API_KEY` de Render, y el correo verificado en `SMTP_USER`.
 
 ## 4. Deploy
 

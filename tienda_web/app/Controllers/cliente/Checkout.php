@@ -173,25 +173,7 @@ class Checkout extends BaseController
         session()->remove('direccion_envio_id');
 
         // Envío de correo de confirmación
-        $config = [
-            'protocol'   => getenv('email.protocol'),
-            'SMTPHost'   => getenv('email.SMTPHost'),
-            'SMTPUser'   => getenv('email.SMTPUser'),
-            'SMTPPass'   => getenv('email.SMTPPass'),
-            'SMTPPort'   => (int) getenv('email.SMTPPort'),
-            'SMTPCrypto' => getenv('email.SMTPCrypto'),
-            'mailType'   => getenv('email.mailType'),
-            'charset'    => getenv('email.charset'),
-            'CRLF'       => "\r\n",
-            'newline'    => "\r\n"
-        ];
-
-        $email = \Config\Services::email();
-        $email->initialize($config);
-        $email->setFrom(getenv('email.SMTPUser'), 'NewPhoneMX Store');
-        $email->setTo($usuario['correo']);
-        $email->setSubject('✅ Confirmación de Compra #' . $pedido_id . ' - NewPhoneMX');
-        $email->setMessage("
+        $htmlCorreo = "
         <div style='background-color:#f4f7f6;padding:30px;font-family:Segoe UI,sans-serif;'>
             <div style='max-width:600px;margin:auto;background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.1);'>
                 <div style='background:#007bff;padding:40px;text-align:center;color:white;'>
@@ -222,8 +204,14 @@ class Checkout extends BaseController
                     © 2026 NewPhoneMX Store. Todos los derechos reservados.
                 </div>
             </div>
-        </div>");
-        $email->send();
+        </div>";
+
+        \App\Libraries\BrevoMailer::enviar(
+            $usuario['correo'],
+            $usuario['nombre'],
+            '✅ Confirmación de Compra #' . $pedido_id . ' - NewPhoneMX',
+            $htmlCorreo
+        );
 
         return view('cliente/exito', ['pedido_id' => $pedido_id, 'transaccion' => $payment_id]);
     }

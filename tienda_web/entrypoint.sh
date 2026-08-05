@@ -20,14 +20,10 @@ JWT_SECRET="${JWT_SECRET}"
 MP_ACCESS_TOKEN="${MP_ACCESS_TOKEN}"
 MP_PUBLIC_KEY="${MP_PUBLIC_KEY}"
 
-email.protocol = 'smtp'
-email.SMTPHost = '${SMTP_HOST}'
+# Correos vía Brevo (API HTTP). Render bloquea el puerto SMTP saliente,
+# así que ya no se usa SMTP directo con Gmail.
+BREVO_API_KEY="${BREVO_API_KEY}"
 email.SMTPUser = '${SMTP_USER}'
-email.SMTPPass = '${SMTP_PASS}'
-email.SMTPPort = ${SMTP_PORT:-465}
-email.SMTPCrypto = '${SMTP_CRYPTO:-ssl}'
-email.mailType = 'html'
-email.charset  = 'utf-8'
 EOF
 
 exec "$@"
