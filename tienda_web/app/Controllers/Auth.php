@@ -75,17 +75,41 @@ class Auth extends BaseController
                 $token_acceso = JWT::encode($payload, $llave_secreta, 'HS256');
 
                 // ==========================================
-                // ENVIAR EL CORREO AL USUARIO
+                // ENVIAR EL CORREO AL USUARIO 
                 // ==========================================
-                $enlace = base_url('auth/validar_token/' . $token_acceso);
+                $email_service = \Config\Services::email();
 
+                $config = [
+                    'protocol'   => getenv('email.protocol'),
+                    'SMTPHost'   => getenv('email.SMTPHost'),
+                    'SMTPUser'   => getenv('email.SMTPUser'),
+                    'SMTPPass'   => getenv('email.SMTPPass'),
+                    'SMTPPort'   => (int) getenv('email.SMTPPort'),
+                    'SMTPCrypto' => getenv('email.SMTPCrypto'),
+                    'mailType'   => getenv('email.mailType'),
+                    'charset'    => getenv('email.charset'),
+                    'CRLF'       => "\r\n", 
+                    'newline'    => "\r\n"  
+                ];
+                
+                $email_service->initialize($config);
+
+                // Definimos quién lo envía y a quién va
+                $email_service->setFrom(getenv('email.SMTPUser'), 'NewPhoneMX Seguridad');
+                $email_service->setTo($data['correo']);
+                $email_service->setSubject('Acceso Seguro a tu Cuenta - NewPhoneMX');
+                
+                $enlace = base_url('auth/validar_token/' . $token_acceso);
+                
                 $html = "<h2>Hola, " . $data['nombre'] . "</h2>";
                 $html .= "<p>Has solicitado iniciar sesión. Haz clic en el botón de abajo para entrar de forma segura a tu cuenta.</p>";
                 $html .= "<p><b>⚠️ Este enlace caduca en exactamente 5 minutos por tu seguridad.</b></p>";
                 $html .= "<a href='{$enlace}' style='display:inline-block; padding:10px 20px; background-color:#6f42c1; color:#ffffff; text-decoration:none; border-radius:5px; font-weight:bold;'>Ingresar a mi cuenta</a>";
                 $html .= "<br><br><p><small>Si no solicitaste este acceso, puedes ignorar este correo.</small></p>";
-
-                if (\App\Libraries\BrevoMailer::enviar($data['correo'], $data['nombre'], 'Acceso Seguro a tu Cuenta - NewPhoneMX', $html)) {
+                
+                $email_service->setMessage($html);
+                
+                if ($email_service->send()) {
                     log_message('info', 'Token JWT de acceso enviado por correo al usuario ID: ' . $data['id']);
                     $session->setFlashdata('success', 'Te hemos enviado un enlace de seguridad a tu correo. Tienes 5 minutos para confirmar tu acceso.');
                 } else {
@@ -230,11 +254,31 @@ class Auth extends BaseController
         ];
         session()->set('temp_registro', $temp_data);
 
+        // CONFIGURACIÓN DEL CORREO (Reutilizamos la que ya tienes en tu login)
+        $email_service = \Config\Services::email();
+        $config = [
+            'protocol'   => getenv('email.protocol'),
+            'SMTPHost'   => getenv('email.SMTPHost'),
+            'SMTPUser'   => getenv('email.SMTPUser'),
+            'SMTPPass'   => getenv('email.SMTPPass'),
+            'SMTPPort'   => (int) getenv('email.SMTPPort'),
+            'SMTPCrypto' => getenv('email.SMTPCrypto'),
+            'mailType'   => getenv('email.mailType'),
+            'charset'    => getenv('email.charset'),
+            'CRLF'       => "\r\n", 
+            'newline'    => "\r\n"  
+        ];
+        $email_service->initialize($config);
+        $email_service->setFrom(getenv('email.SMTPUser'), 'NewPhoneMX');
+        $email_service->setTo($correo);
+        $email_service->setSubject('Tu Código de Verificación');
+        
         $html = "<h2>Hola, {$temp_data['nombre']}</h2>";
         $html .= "<p>Estás a un paso de crear tu cuenta en NewPhoneMX.</p>";
         $html .= "<p>Tu código de verificación es: <b style='font-size: 24px; color: #654696;'>{$codigo}</b></p>";
+        $email_service->setMessage($html);
 
-        if (\App\Libraries\BrevoMailer::enviar($correo, $temp_data['nombre'], 'Tu Código de Verificación', $html)) {
+        if ($email_service->send()) {
             return $this->response->setJSON(['success' => true]);
         } else {
             return $this->response->setJSON(['success' => false, 'msg' => 'No pudimos enviar el correo. Revisa tu dirección.']);
@@ -290,12 +334,34 @@ class Auth extends BaseController
         $codigo = rand(100000, 999999);
         $model->update($usuario['id'], ['codigo_recuperacion' => $codigo]);
 
+        // Configuramos el correo
+        $email_service = \Config\Services::email();
+        $config = [
+            'protocol'   => getenv('email.protocol'),
+            'SMTPHost'   => getenv('email.SMTPHost'),
+            'SMTPUser'   => getenv('email.SMTPUser'),
+            'SMTPPass'   => getenv('email.SMTPPass'),
+            'SMTPPort'   => (int) getenv('email.SMTPPort'),
+            'SMTPCrypto' => getenv('email.SMTPCrypto'),
+            'mailType'   => getenv('email.mailType'),
+            'charset'    => getenv('email.charset'),
+            'CRLF'       => "\r\n", 
+            'newline'    => "\r\n"  
+        ];
+        $email_service->initialize($config);
+
+        $email_service->setFrom(getenv('email.SMTPUser'), 'NewPhoneMX Seguridad');
+        $email_service->setTo($correo);
+        $email_service->setSubject('Código de Recuperación de Cuenta');
+        
         $html = "<h2>Hola, " . $usuario['nombre'] . "</h2>";
         $html .= "<p>Hemos recibido una solicitud para recuperar tu cuenta.</p>";
         $html .= "<p>Tu código de seguridad de 6 dígitos es: <b style='font-size:24px; color:#654696;'>{$codigo}</b></p>";
         $html .= "<p><small>Si no solicitaste esto, ignora este mensaje.</small></p>";
+        
+        $email_service->setMessage($html);
 
-        if (\App\Libraries\BrevoMailer::enviar($correo, $usuario['nombre'], 'Código de Recuperación de Cuenta', $html)) {
+        if ($email_service->send()) {
             return $this->response->setJSON(['success' => true]);
         } else {
             return $this->response->setJSON(['success' => false, 'msg' => 'Hubo un error al enviar el correo con el código.']);
